@@ -1,0 +1,26 @@
+#applyBtn,
+#addCustomBeatBtn {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+#applyBtn {
+    background: #20a4f3;
+    color: white;
+}
+
+#applyBtn:hover {
+    background: #1394d9;
+}
+
+#addCustomBeatBtn {
+    background: #27ae60;
+    color: white;
+}
