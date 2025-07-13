@@ -18,7 +18,6 @@ const ECGInputs = ({
   const handleInputChange = (path: string, value: number | boolean) => {
     setECGParameters((prev: any) => onChange(prev, path, value));
   };
-
   return (
     <>
       <ECGInput
@@ -29,7 +28,7 @@ const ECGInputs = ({
         min={20}
         max={250}
         id="heart_rate"
-        onChange={(_) => handleInputChange("HeartRate", _.value)} />
+        onChange={(_) => handleInputChange("HeartRate", _.target.value)} />
 
       <ECGInput
         label={"Pixels per mV:"}
@@ -38,7 +37,7 @@ const ECGInputs = ({
         step={10}
         min={10}
         id="pixelsPerMv"
-        onChange={(_) => handleInputChange("PixelsPermV", _.value)} />
+        onChange={(_) => handleInputChange("PixelsPermV", _.target.value)} />
 
       <WaveParametersInputs
         ecgParameters={ecgParameters}
@@ -58,7 +57,7 @@ const ECGInputs = ({
         step={1}
         min={0}
         id="rWaveCount"
-        onChange={(_) => handleInputChange("DynamicRWaveParameters.DynamicRWavePattern.DynamicWavePattern", _.value)} />
+        onChange={(_) => handleInputChange("DynamicRWaveParameters.DynamicRWavePattern.DynamicWavePattern", _.target.value)} />
 
       <ECGInput
         label={"Apply After N QRS:"}
@@ -67,7 +66,7 @@ const ECGInputs = ({
         step={1}
         min={0}
         id="rWaveInterval"
-        onChange={(_) => handleInputChange("DynamicRWaveParameters.DynamicRWavePattern.NQRS", _.value)} />
+        onChange={(_) => handleInputChange("DynamicRWaveParameters.DynamicRWavePattern.NQRS", _.target.value)} />
 
       <h3>Dynamic P Wave Pattern</h3>
       <div className="param-group"><label>
@@ -82,7 +81,7 @@ const ECGInputs = ({
         step={1}
         min={0}
         id="pWaveCount"
-        onChange={(_) => handleInputChange("DynamicPWaveParameters.DynamicPWavePattern.DynamicWavePattern", _.value)} />
+        onChange={(_) => handleInputChange("DynamicPWaveParameters.DynamicPWavePattern.DynamicWavePattern", _.target.value)} />
 
       <ECGInput
         label={"Apply After N QRS:"}
@@ -91,7 +90,7 @@ const ECGInputs = ({
         step={1}
         min={0}
         id="pWaveInterval"
-        onChange={(_) => handleInputChange("DynamicPWaveParameters.DynamicPWavePattern.NQRS", _.value)} />
+        onChange={(_) => handleInputChange("DynamicPWaveParameters.DynamicPWavePattern.NQRS", _.target.value)} />
 
       <h3>Custom Beat Sequence</h3>
       <div className="param-group">
@@ -109,7 +108,7 @@ const ECGInputs = ({
         step={1}
         min={0}
         id="repeatInterval"
-        onChange={(_) => handleInputChange("CustomBeatsParameters.NormalBeatsBeforeRepeat", _.value)} />
+        onChange={(_) => handleInputChange("CustomBeatsParameters.NormalBeatsBeforeRepeat", _.target.value)} />
 
       <div id="customBeatsContainer"></div>
 

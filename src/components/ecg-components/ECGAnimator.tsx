@@ -30,16 +30,18 @@ const ECGAnimator: React.FC<ECGAnimatorProps> = ({
     const waveformPathRef = useRef<SVGPathElement | null>(null);
     const drawnPointsRef = useRef<Array<{ x: number; y: number } | null>>([]);
 
+    const pendingPointsRef = useRef<Array<{ x: number; y: number } | null>>([]);
     const pathPointsRef = useRef<Array<{ x: number; y: number }>>([]);
 
 
-    const generateWaveformPoints = (): Array<{ x: number; y: number }> => {
+    const generateWaveformPoints = (startX = 0): Array<{ x: number; y: number }> => {
+
         const pts: Array<{ x: number; y: number }> = [];
         const totalTime = svgRef.current!.clientWidth / PIXELS_PER_SECOND;
         const y0 = svgRef.current!.clientHeight / 2;
         const dt = 1 / PIXELS_PER_SECOND;
 
-        let tElapsed = 0;
+        let tElapsed = startX / PIXELS_PER_SECOND;
         while (tElapsed <= totalTime) {
             const p = ecgParameters.WaveParameters;
             const heartPeriod = 60 / ecgParameters.HeartRate;
@@ -135,8 +137,16 @@ const ECGAnimator: React.FC<ECGAnimatorProps> = ({
     };
 
     useEffect(() => {
+        let currentX = pointerXRef.current;
+
+        const points = generateWaveformPoints(currentX);
+
         const svg = svgRef.current;
         if (!svg) return;
+
+        while (svg.firstChild) {
+            svg.removeChild(svg.firstChild);
+        }
 
         drawGrid();
         const ns = "http://www.w3.org/2000/svg";
@@ -156,13 +166,22 @@ const ECGAnimator: React.FC<ECGAnimatorProps> = ({
         svg.appendChild(circle);
         pointerHeadRef.current = circle;
 
-        const points = generateWaveformPoints();
-        pathPointsRef.current = points;
+        pendingPointsRef.current = generateWaveformPoints(pointerXRef.current);
 
-        drawnPointsRef.current = Array(points.length).fill(null);
-        pointerXRef.current = 0;
-        
-        lastTimestampRef.current = 0;
+        const alreadyDrawn = drawnPointsRef.current.filter(p => p && p.x <= currentX) as Array<{ x: number; y: number }>;
+
+        if (!points.length) return;
+        drawnPointsRef.current = [...alreadyDrawn, ...Array(points.length).fill(null)];
+        pendingPointsRef.current = [...Array(alreadyDrawn.length).fill(null), ...points];
+        pathPointsRef.current = [...alreadyDrawn, ...points];
+
+        // Extend drawnPointsRef with new empty slots
+        const newDrawnPoints = Array(points.length).fill(null);
+        drawnPointsRef.current = [
+            ...drawnPointsRef.current.filter(pt => pt && pt.x < pointerXRef.current),
+            ...newDrawnPoints
+        ];
+        lastTimestampRef.current = performance.now();
 
         const animate = (ts: number) => {
             const svg = svgRef.current;
@@ -176,12 +195,14 @@ const ECGAnimator: React.FC<ECGAnimatorProps> = ({
 
             if (idx < 0) idx = pathPointsRef.current.length - 1;
 
-            const es = nextX - ERASE_WIDTH / 2, ee = nextX + ERASE_WIDTH / 2;
-            const si = drawnPointsRef.current.findIndex(pt => pt && pt.x >= es);
-            const ei = drawnPointsRef.current.findIndex(pt => pt && pt.x > ee);
-            for (let i = (si < 0 ? 0 : si); i < (ei < 0 ? drawnPointsRef.current.length : ei); i++) {
-                drawnPointsRef.current[i] = pathPointsRef.current[i];
+            for (let i = 0; i < pathPointsRef.current.length; i++) {
+                const pt = pendingPointsRef.current[i];
+                if (pt && Math.abs(pt.x - pointerXRef.current) <= ERASE_WIDTH / 2) {
+                    drawnPointsRef.current[i] = pt;
+                    pendingPointsRef.current[i] = null;
+                }
             }
+
 
             waveformPathRef.current?.setAttribute("d",
                 drawnPointsRef.current.reduce((str, p, i) => str + (p ? (i ? " L" : "M") + ` ${p.x} ${p.y}` : ""), "")

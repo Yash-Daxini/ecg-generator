@@ -44,7 +44,7 @@ interface WaveDimensions {
     breadth: number;
 }
 
-interface CustomBeatParameters {
+export interface CustomBeatParameter {
     PWaveDimensions: WaveDimensions;
     QWaveDimensions: WaveDimensions;
     RWaveDimensions: WaveDimensions;

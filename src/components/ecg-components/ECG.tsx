@@ -2,7 +2,7 @@ import ECGAnimator from './ECGAnimator'
 import ECGInputs from './ECGInputs'
 import '../../styles/ECG.css'
 import { useState } from 'react';
-import type { CustomBeatParameter, ECGParameters } from '../../models/ECGParameters';
+import type { ECGParameters } from '../../models/ECGParameters';
 
 const ECG = () => {
 
@@ -56,7 +56,7 @@ const ECG = () => {
             }
         });
 
-    const [CustomBeatParameters, setCustomBeatParameters] = useState<CustomBeatParameter[]>([]);
+    // const [CustomBeatParameters, setCustomBeatParameters] = useState<CustomBeatParameter[]>([]);
 
     return (
         <>
