@@ -1,0 +1,21 @@
+.ecg-container {
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+.controls {
+    flex: 1;
+    min-width: 320px;
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
+    max-height: 95vh;
+}
+
+.canvas-container {
+    flex: 2;
+    min-width: 600px;
+}
