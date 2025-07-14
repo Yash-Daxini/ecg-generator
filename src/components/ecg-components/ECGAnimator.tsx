@@ -78,7 +78,7 @@ const ECGAnimator: React.FC<ECGAnimatorProps> = ({
                 return t;
             })();
 
-            const tEnd = tElapsed + base * sf;
+            const tEnd = tElapsed + heartPeriod;
 
             for (let t = tElapsed; t < tEnd; t += dt) {
                 let v = 0;
@@ -141,12 +141,17 @@ const ECGAnimator: React.FC<ECGAnimatorProps> = ({
 
         const points = generateWaveformPoints(currentX);
 
+        updateGraph(currentX, points);
+    }, [ecgParameters]);
+
+    const updateGraph = (currentX: number, points: {
+        x: number;
+        y: number;
+    }[]) => {
         const svg = svgRef.current;
         if (!svg) return;
 
-        while (svg.firstChild) {
-            svg.removeChild(svg.firstChild);
-        }
+        svg.innerHTML = ''; // lighter than removeChild loop
 
         drawGrid();
         const ns = "http://www.w3.org/2000/svg";
@@ -165,8 +170,6 @@ const ECGAnimator: React.FC<ECGAnimatorProps> = ({
         circle.setAttribute("stroke-width", "2");
         svg.appendChild(circle);
         pointerHeadRef.current = circle;
-
-        pendingPointsRef.current = generateWaveformPoints(pointerXRef.current);
 
         const alreadyDrawn = drawnPointsRef.current.filter(p => p && p.x <= currentX) as Array<{ x: number; y: number }>;
 
@@ -224,7 +227,7 @@ const ECGAnimator: React.FC<ECGAnimatorProps> = ({
         return () => {
             if (animationRef.current) cancelAnimationFrame(animationRef.current);
         };
-    }, [ecgParameters]);
+    }
 
 
     return (
