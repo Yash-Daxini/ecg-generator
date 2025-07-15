@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import type { ECGParameters } from "../../models/ECGParameters";
 import '../../styles/ECGAnimator.css';
 
@@ -17,9 +17,7 @@ const raisedCosinePulse = (t: number, h: number, b: number, t0: number) => {
 };
 
 const ECGAnimator: React.FC<ECGAnimatorProps> = ({
-    ecgParameters,
-    customBeatsParams
-}) => {
+    ecgParameters}) => {
 
     const svgRef = useRef<SVGSVGElement | null>(null);
     const animationRef = useRef<number>(0);
@@ -151,7 +149,15 @@ const ECGAnimator: React.FC<ECGAnimatorProps> = ({
         const svg = svgRef.current;
         if (!svg) return;
 
-        svg.innerHTML = ''; // lighter than removeChild loop
+        // svg.childNodes.forEach(child => {
+        //     console.warn(`Child with x1=${currentX} already exists, skipping update.`);
+        //     if (child instanceof SVGElement && child.getAttribute('x1') == currentX.toString()) {
+        //         console.warn(`Child with x1=${currentX} already exists, skipping update.`);
+        //         svg.removeChild(child);
+        //     }
+        // });
+
+        svg.innerHTML = '';
 
         drawGrid();
         const ns = "http://www.w3.org/2000/svg";
@@ -174,8 +180,10 @@ const ECGAnimator: React.FC<ECGAnimatorProps> = ({
         const alreadyDrawn = drawnPointsRef.current.filter(p => p && p.x <= currentX) as Array<{ x: number; y: number }>;
 
         if (!points.length) return;
+
         drawnPointsRef.current = [...alreadyDrawn, ...Array(points.length).fill(null)];
-        pendingPointsRef.current = [...Array(alreadyDrawn.length).fill(null), ...points];
+        // pendingPointsRef.current = [...Array(alreadyDrawn.length).fill(null), ...points]; //alreadyDrawn.length is the number of points already drawn or starting points from already moving pointer
+        pendingPointsRef.current = [...points];
         pathPointsRef.current = [...alreadyDrawn, ...points];
 
         // Extend drawnPointsRef with new empty slots
