@@ -17,7 +17,7 @@ const raisedCosinePulse = (t: number, h: number, b: number, t0: number) => {
 };
 
 const ECGAnimator: React.FC<ECGAnimatorProps> = ({
-    ecgParameters}) => {
+    ecgParameters }) => {
 
     const svgRef = useRef<SVGSVGElement | null>(null);
     const animationRef = useRef<number>(0);
@@ -182,9 +182,17 @@ const ECGAnimator: React.FC<ECGAnimatorProps> = ({
         if (!points.length) return;
 
         drawnPointsRef.current = [...alreadyDrawn, ...Array(points.length).fill(null)];
-        // pendingPointsRef.current = [...Array(alreadyDrawn.length).fill(null), ...points]; //alreadyDrawn.length is the number of points already drawn or starting points from already moving pointer
-        pendingPointsRef.current = [...points];
+        pendingPointsRef.current = [...Array(alreadyDrawn.length).fill(null), ...points];
+        //alreadyDrawn.length is the number of points already drawn or starting points from already moving pointer
+        // pendingPointsRef.current = [...points];
         pathPointsRef.current = [...alreadyDrawn, ...points];
+
+        const newPoints = generateWaveformPoints(0);
+
+        const newAlreadyDrawn = newPoints.filter(p => p && p.x <= currentX) as Array<{ x: number; y: number }>;
+
+        // pendingPointsRef.current = [...Array(newAlreadyDrawn.length).fill(null)];
+        drawnPointsRef.current = [...newAlreadyDrawn, ...points];
 
         // Extend drawnPointsRef with new empty slots
         const newDrawnPoints = Array(points.length).fill(null);
