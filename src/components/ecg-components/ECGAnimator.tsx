@@ -157,7 +157,7 @@ const ECGAnimator: React.FC<ECGAnimatorProps> = ({
         //     }
         // });
 
-        svg.innerHTML = '';
+        // svg.innerHTML = '';
 
         drawGrid();
         const ns = "http://www.w3.org/2000/svg";
@@ -187,12 +187,16 @@ const ECGAnimator: React.FC<ECGAnimatorProps> = ({
         // pendingPointsRef.current = [...points];
         pathPointsRef.current = [...alreadyDrawn, ...points];
 
+        //This will update whole graph with new points
+        /* 
         const newPoints = generateWaveformPoints(0);
 
         const newAlreadyDrawn = newPoints.filter(p => p && p.x <= currentX) as Array<{ x: number; y: number }>;
 
-        // pendingPointsRef.current = [...Array(newAlreadyDrawn.length).fill(null)];
         drawnPointsRef.current = [...newAlreadyDrawn, ...points];
+        */
+
+        // pendingPointsRef.current = [...Array(newAlreadyDrawn.length).fill(null)];
 
         // Extend drawnPointsRef with new empty slots
         const newDrawnPoints = Array(points.length).fill(null);
@@ -212,6 +216,10 @@ const ECGAnimator: React.FC<ECGAnimatorProps> = ({
 
             let idx = pathPointsRef.current.findIndex(pt => pt.x >= nextX);
 
+            const newPoints = generateWaveformPoints(0);
+
+            const newAlreadyDrawn = newPoints.filter(p => p && p.x <= currentX) as Array<{ x: number; y: number }>;
+
             if (idx < 0) idx = pathPointsRef.current.length - 1;
 
             for (let i = 0; i < pathPointsRef.current.length; i++) {
@@ -222,6 +230,13 @@ const ECGAnimator: React.FC<ECGAnimatorProps> = ({
                 }
             }
 
+            for (let i = 0; i < newAlreadyDrawn.length; i++) {
+                const pt = newAlreadyDrawn[i];
+                if (pt && Math.abs(pt.x - pointerXRef.current) <= ERASE_WIDTH / 2) {
+                    drawnPointsRef.current[i] = pt;
+                    pendingPointsRef.current[i] = null;
+                }
+            }
 
             waveformPathRef.current?.setAttribute("d",
                 drawnPointsRef.current.reduce((str, p, i) => str + (p ? (i ? " L" : "M") + ` ${p.x} ${p.y}` : ""), "")
