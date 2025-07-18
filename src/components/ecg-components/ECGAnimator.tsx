@@ -157,7 +157,7 @@ const ECGAnimator: React.FC<ECGAnimatorProps> = ({
         //     }
         // });
 
-        // svg.innerHTML = '';
+        svg.innerHTML = '';
 
         drawGrid();
         const ns = "http://www.w3.org/2000/svg";
@@ -241,7 +241,7 @@ const ECGAnimator: React.FC<ECGAnimatorProps> = ({
             waveformPathRef.current?.setAttribute("d",
                 drawnPointsRef.current.reduce((str, p, i) => str + (p ? (i ? " L" : "M") + ` ${p.x} ${p.y}` : ""), "")
             );
-
+            
             const cur = pathPointsRef.current[idx];
             if (cur) {
                 pointerHeadRef.current?.setAttribute("cx", `${cur.x}`);
